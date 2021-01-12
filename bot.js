@@ -38,12 +38,12 @@ app.post('/login', urlencodedParser, function (req, res) {
 	console.log(req.body.content);
 	var username = req.body.content.split(", ")[0];
 	var pw = req.body.content.split(", ")[1];
-	var str = "SELECT " + id + " FROM account WHERE EXISTS ( SELECT * FROM account WHERE username = '" + username + "' ) LIMIT 1;";
+	var str = "SELECT id FROM account WHERE EXISTS ( SELECT * FROM account WHERE username = '" + username + "' ) LIMIT 1;";
 	DataFetch(str).then(res => {
 		if (typeof(res.rows[0]) == "undefined" || JSON.stringify(res.rows[0]).includes("null")) {
 			res.send('此帳號不存在。');
     	} else {
-			var str = "SELECT " + id + " FROM account WHERE EXISTS ( SELECT * FROM account WHERE password = '" + pw + "' ) LIMIT 1;";
+			var str = "SELECT id FROM account WHERE EXISTS ( SELECT * FROM account WHERE password = '" + pw + "' ) LIMIT 1;";
 			DataFetch(str).then(res => {
 				if (typeof(res.rows[0]) == "undefined" || JSON.stringify(res.rows[0]).includes("null")) {
 					res.send('密碼錯誤，請重新輸入。');
