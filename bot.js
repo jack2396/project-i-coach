@@ -55,7 +55,7 @@ app.post('/login', urlencodedParser, function (req, response) {
 	});
 });
 
-app.post('/register', urlencodedParser, function (req, res) {
+app.post('/register', urlencodedParser, function (req, response) {
 		console.log(req.body.content);
 	var username = req.body.content.split(", ")[0];
 	var pw = req.body.content.split(", ")[1];
@@ -63,7 +63,7 @@ app.post('/register', urlencodedParser, function (req, res) {
 	DataFetch(str).then(res => {
 		if (typeof(res.rows[0]) == "undefined" || JSON.stringify(res.rows[0]).includes("null")) {
 			var str = "INSERT INTO account (username, password) VALUES ('" + username + "', '" + pw + "');";
-			pool.query(Str, (err, res) => {
+			pool.query(str, (err, res) => {
             	if (err) {
                		console.log(err.stack);
             	    reject("Failed.");
