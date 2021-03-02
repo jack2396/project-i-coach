@@ -17,7 +17,9 @@ const pool = new Pool({
 app.listen(process.env.PORT || 5000);
 
 var bodyParser = require('body-parser');
-var urlencodedParser = bodyParser.urlencoded({ extended: false })
+var urlencodedParser = bodyParser.urlencoded({
+    extended: false
+})
 
 function DataFetch(Str) {
     return new Promise(function(resolve, reject) {
@@ -34,60 +36,87 @@ function DataFetch(Str) {
     });
 }
 
-app.post('/login', urlencodedParser, function (req, response) {
-	console.log(req.body.content);
-	var username = req.body.content.split(", ")[0];
-	var pw = req.body.content.split(", ")[1];
+app.post('/login', urlencodedParser, function(req, response) {
+    console.log(req.body.content);
+    var username = req.body.content.split(", ")[0];
+    var pw = req.body.content.split(", ")[1];
 
-	var str = "SELECT id FROM account WHERE EXISTS ( SELECT * FROM account WHERE username = '" + username + "' ) LIMIT 1;";
-	DataFetch(str).then(res => {
-		if (typeof(res.rows[0]) == "undefined" || JSON.stringify(res.rows[0]).includes("null")) {
-			response.send('此帳號不存在。');
-    	} else {
-			var str = "SELECT id FROM account WHERE EXISTS ( SELECT * FROM account WHERE username = '" + username + "' AND password = '" + pw + "' ) LIMIT 1;";
-			DataFetch(str).then(res => {
-				if (typeof(res.rows[0]) == "undefined" || JSON.stringify(res.rows[0]).includes("null")) {
-					response.send('密碼錯誤，請重新輸入。');
-  				} else {
-  					response.send(username + '，歡迎回來！');
-    		   	}
-			});
+    var str = "SELECT id FROM account WHERE EXISTS ( SELECT * FROM account WHERE username = '" + username + "' ) LIMIT 1;";
+    DataFetch(str).then(res => {
+        if (typeof(res.rows[0]) == "undefined" || JSON.stringify(res.rows[0]).includes("null")) {
+            response.send('此帳號不存在。');
+        } else {
+            var str = "SELECT id FROM account WHERE EXISTS ( SELECT * FROM account WHERE username = '" + username + "' AND password = '" + pw + "' ) LIMIT 1;";
+            DataFetch(str).then(res => {
+                if (typeof(res.rows[0]) == "undefined" || JSON.stringify(res.rows[0]).includes("null")) {
+                    response.send('密碼錯誤，請重新輸入。');
+                } else {
+                    response.send(username + '，歡迎回來！');
+                }
+            });
         }
-	});
+    });
 });
 
-app.post('/register', urlencodedParser, function (req, response) {
-	console.log(req.body.content);
-	var username = req.body.content.split(", ")[0];
-	var pw = req.body.content.split(", ")[1];
-	var str = "SELECT username FROM account WHERE EXISTS ( SELECT * FROM account WHERE username = '" + username + "' ) LIMIT 1;";
-	DataFetch(str).then(res => {
-		console.log(res.rows);
-    if (typeof(res.rows[0]) == "undefined" || JSON.stringify(res.rows[0]).includes("null")) {
-      var id = "";
-        for (var i = 0; i <= 16; i++) {
-          id += Math.floor(Math.random() * 10) + 1;
-      }
-			var str = "INSERT INTO account (username, password, id) VALUES ('" + username + "', '" + pw + "', '" + id + "');";
-			pool.query(str, (err, res) => {
-            	if (err) {
-               		console.log(err.stack);
-            	    reject("Failed.");
-                	throw err;
-           	 	} else {
-           	 		response.send('註冊成功！');
-        	    }
-        	});
-    	} else {
-			response.send('本帳號已存在！請試著使用其他帳號。');
+app.post('/register', urlencodedParser, function(req, response) {
+    console.log(req.body.content);
+    var username = req.body.content.split(", ")[0];
+    var pw = req.body.content.split(", ")[1];
+    var str = "SELECT username FROM account WHERE EXISTS ( SELECT * FROM account WHERE username = '" + username + "' ) LIMIT 1;";
+    DataFetch(str).then(res => {
+        console.log(res.rows);
+        if (typeof(res.rows[0]) == "undefined" || JSON.stringify(res.rows[0]).includes("null")) {
+            var id = "";
+            for (var i = 0; i <= 16; i++) {
+                id += Math.floor(Math.random() * 10) + 1;
+            }
+            var str = "INSERT INTO account (username, password, id) VALUES ('" + username + "', '" + pw + "', '" + id + "');";
+            pool.query(str, (err, res) => {
+                if (err) {
+                    console.log(err.stack);
+                    reject("Failed.");
+                    throw err;
+                } else {
+                    response.send('註冊成功！');
+                }
+            });
+        } else {
+            response.send('本帳號已存在！請試著使用其他帳號。');
         }
-	});
+    });
 });
 
-app.post('/project', urlencodedParser, function (req, res) {
-	res.send('');
+app.post('/project', urlencodedParser, function(req, response) {
+    console.log(req.body.content);
+    var name = req.body.content.split(", ")[0];
+    var type = req.body.content.split(", ")[1];
+    var height = req.body.content.split(", ")[2];
+    var weight = req.body.content.split(", ")[3];
+    var sex = req.body.content.split(", ")[4];
+    var age = req.body.content.split(", ")[5];
+    var bmi = req.body.content.split(", ")[6];
+    var calories = req.body.content.split(", ")[7];
+    var public = req.body.content.split(", ")[8];
+    var str = "SELECT name FROM project WHERE EXISTS ( SELECT * FROM account WHERE name = '" + name + "' ) LIMIT 1;";
+    DataFetch(str).then(res => {
+        console.log(res.rows);
+        if (typeof(res.rows[0]) == "undefined" || JSON.stringify(res.rows[0]).includes("null")) {
+            var str = "INSERT INTO project (name, type, height, weight, sex, age, bmi, calories, public) VALUES ('"+ name + "', '"+ type + "', '"+ height + "', '"+ weight + "', '" + sex + "', '" + age + "', '" + bmi + "', '"+ calories + "', '" + pulbic + "');";
+            pool.query(str, (err, res) => {
+                if (err) {
+                    console.log(err.stack);
+                    reject("Failed.");
+                    throw err;
+                } else {
+                    response.send('計畫登錄成功！');
+                }
+            });
+        } else {
+            response.send('此計畫名稱已存在，請嘗試使用其他名稱。');
+        }
+    });
 });
 
-app.post('/select', urlencodedParser, function (req, res) {
-	res.send('');
+app.post('/select', urlencodedParser, function(req, res) {
+    res.send('');
 });
