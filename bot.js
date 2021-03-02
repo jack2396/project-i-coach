@@ -38,9 +38,9 @@ app.post('/login', urlencodedParser, function (req, response) {
 	console.log(req.body.content);
 	var username = req.body.content.split(", ")[0];
 	var pw = req.body.content.split(", ")[1];
+  console.log(username);
 	var str = "SELECT id FROM account WHERE EXISTS ( SELECT * FROM account WHERE username = '" + username + "' ) LIMIT 1;";
 	DataFetch(str).then(res => {
-    console.log(res.rows);
 		if (typeof(res.rows[0]) == "undefined" || JSON.stringify(res.rows[0]).includes("null")) {
 			response.send('此帳號不存在。');
     	} else {
