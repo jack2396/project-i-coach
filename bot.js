@@ -63,8 +63,11 @@ app.post('/register', urlencodedParser, function (req, response) {
 	DataFetch(str).then(res => {
 		console.log(res.rows);
     if (typeof(res.rows[0]) == "undefined" || JSON.stringify(res.rows[0]).includes("null")) {
-      var last = res.rows[0] += 1;
-			var str = "INSERT INTO account (username, password, id) VALUES ('" + username + "', '" + pw + "', '" + last + "');";
+      var id = "";
+        for (var i = 0; i <= 16; i++) {
+          id += Math.floor(Math.random() * 10) + 1;
+      }
+			var str = "INSERT INTO account (username, password, id) VALUES ('" + username + "', '" + pw + "', '" + id + "');";
 			pool.query(str, (err, res) => {
             	if (err) {
                		console.log(err.stack);
