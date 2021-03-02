@@ -97,11 +97,11 @@ app.post('/project', urlencodedParser, function(req, response) {
     var bmi = req.body.content.split(", ")[6];
     var calories = req.body.content.split(", ")[7];
     var public = req.body.content.split(", ")[8];
-    var str = "SELECT name FROM project WHERE EXISTS ( SELECT * FROM account WHERE name = '" + name + "' ) LIMIT 1;";
+    var str = "SELECT name FROM projects WHERE EXISTS ( SELECT * FROM account WHERE name = '" + name + "' ) LIMIT 1;";
     DataFetch(str).then(res => {
         console.log(res.rows);
         if (typeof(res.rows[0]) == "undefined" || JSON.stringify(res.rows[0]).includes("null")) {
-            var str = "INSERT INTO project (name, type, height, weight, sex, age, bmi, calories, public) VALUES ('"+ name + "', '"+ type + "', '"+ height + "', '"+ weight + "', '" + sex + "', '" + age + "', '" + bmi + "', '"+ calories + "', '" + pulbic + "');";
+            var str = "INSERT INTO projects (name, type, height, weight, sex, age, bmi, calories, public) VALUES ('"+ name + "', '"+ type + "', '"+ height + "', '"+ weight + "', '" + sex + "', '" + age + "', '" + bmi + "', '"+ calories + "', '" + pulbic + "');";
             pool.query(str, (err, res) => {
                 if (err) {
                     console.log(err.stack);
