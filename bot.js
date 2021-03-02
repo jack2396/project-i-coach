@@ -40,6 +40,7 @@ app.post('/login', urlencodedParser, function (req, response) {
 	var pw = req.body.content.split(", ")[1];
 	var str = "SELECT id FROM account WHERE EXISTS ( SELECT * FROM account WHERE username = '" + username + "' ) LIMIT 1;";
 	DataFetch(str).then(res => {
+    console.log(res.rows[0]);
 		if (typeof(res.rows[0]) == "undefined" || JSON.stringify(res.rows[0]).includes("null")) {
 			response.send('此帳號不存在。');
     	} else {
