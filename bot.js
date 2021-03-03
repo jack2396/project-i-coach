@@ -145,6 +145,6 @@ app.post('/getlist', urlencodedParser, function(req, response) {
 
 app.post('/getmonth', urlencodedParser, function(req, response) {
 	var date = new Date();
-    response.send(date.getMonth() + 1);
+    response.send((date.getMonth() + 1).toString());
 });
 
