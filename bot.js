@@ -121,15 +121,15 @@ app.post('/project', urlencodedParser, function(req, response) {
 app.post('/getlist', urlencodedParser, function(req, response) {
 	console.log(req.body.content);
     var name = req.body.content;
-    var str = "SELECT name FROM projects WHERE EXISTS ( SELECT * FROM projects WHERE author = '" + name + "' );";
+    var str = "SELECT name FROM projects WHERE author = '" + name + "'";
     DataFetch(str).then(res => {
         console.log(res.rows);
         if (typeof(res.rows[0]) == "undefined" || JSON.stringify(res.rows[0]).includes("null")) {
             response.send('無');
         } else {
         	var projectName = "";
-        	for (var i = res.rows.length - 1; i > 0; i--) {
-        		if (i == 1) {
+        	for (var i = res.rows.length - 1; i >= 0; i--) {
+        		if (i == 0) {
 					projectName += res.rows[i].name;
         		} else {
         			projectName += res.rows[i].name + ",";
