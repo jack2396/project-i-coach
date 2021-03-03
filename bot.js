@@ -102,7 +102,7 @@ app.post('/project', urlencodedParser, function(req, response) {
     DataFetch(str).then(res => {
         console.log(res.rows);
         if (typeof(res.rows[0]) == "undefined" || JSON.stringify(res.rows[0]).includes("null")) {
-            var str = "INSERT INTO projects (name, type, height, weight, sex, age, bmi, calories, public, author) VALUES ('"+ name + "', '"+ type + "', '"+ height + "', '"+ weight + "', '" + sex + "', '" + age + "', '" + bmi + "', '" + calories + "', '" + public + "', '" + author + ");";
+            var str = "INSERT INTO projects (name, type, height, weight, sex, age, bmi, calories, public, author) VALUES ('"+ name + "', '"+ type + "', '"+ height + "', '"+ weight + "', '" + sex + "', '" + age + "', '" + bmi + "', '" + calories + "', '" + public + "', '" + author + "');";
             pool.query(str, (err, res) => {
                 if (err) {
                     console.log(err.stack);
