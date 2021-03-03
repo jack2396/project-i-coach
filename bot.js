@@ -121,7 +121,7 @@ app.post('/project', urlencodedParser, function(req, response) {
 app.post('/getlist', urlencodedParser, function(req, response) {
 	console.log(req.body.content);
     var name = req.body.content[0];
-    var str = "SELECT name FROM projects WHERE EXISTS ( SELECT * FROM account WHERE author = '" + name + "' );";
+    var str = "SELECT name FROM projects WHERE EXISTS ( SELECT * FROM projects WHERE author = '" + name + "' );";
     DataFetch(str).then(res => {
         console.log(res.rows);
         if (typeof(res.rows[0]) == "undefined" || JSON.stringify(res.rows[0]).includes("null")) {
