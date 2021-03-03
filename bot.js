@@ -130,9 +130,9 @@ app.post('/getlist', urlencodedParser, function(req, response) {
         	var projectName = "";
         	for (var i = res.rows.length - 1; i > 0; i--) {
         		if (i == 0) {
-					projectName += res.rows[i];
+					projectName += res.rows[i].name;
         		} else {
-        			projectName += res.rows[i] + ",";
+        			projectName += res.rows[i].name + ",";
         		}
         	}
         	console.log(projectName);
