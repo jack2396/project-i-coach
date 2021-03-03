@@ -117,6 +117,33 @@ app.post('/project', urlencodedParser, function(req, response) {
     });
 });
 
-app.post('/select', urlencodedParser, function(req, res) {
-    res.send('');
+app.post('/getlist', urlencodedParser, function(req, response) {
+	console.log(req.body.content);
+    var name = req.body.content;
+    var str = "SELECT name FROM projects WHERE EXISTS ( SELECT * FROM account WHERE name = '" + name + "' );";
+    DataFetch(str).then(res => {
+        console.log(res.rows);
+        if (typeof(res.rows[0]) == "undefined" || JSON.stringify(res.rows[0]).includes("null")) {
+            response.send('計畫登錄成功！');
+        } else {
+        	var projectName = "";
+        	for (var i = res.rows.length - 1; i > 0; i--) {
+        		if (i == 0) {
+					projectName += res.rows[i];
+        		} else {
+        			projectName += res.rows[i] + ",";
+        		}
+        	}
+        	console.log(projectName);
+            response.send(projectName);
+        }
+    });
+
+
 });
+
+app.post('/getmonth', urlencodedParser, function(req, response) {
+	var date = new Date();
+    response.send(date.getMonth() + 1);
+});
+
