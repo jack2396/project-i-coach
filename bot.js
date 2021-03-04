@@ -135,8 +135,13 @@ app.post('/getlist', urlencodedParser, function(req, response) {
         			projectName += res.rows[i].name + ",";
         		}
         	}
-        	console.log(projectName);
-            response.send(projectName);
+    		var str = "SELECT lastcheck, checkcount, lostcalories FROM account WHERE username = '" + name + "' LIMIT 1;";
+    		dataControl(str).then(res => {
+        		var str = "SELECT calories FROM projects WHERE name = '" + project + "' LIMIT 1;";
+    			dataControl(str).then(res2 => {
+        			response.send(projectName + "," + res.rows[0].lastcheck + "," + res.rows[0].checkcount + "," + res2.rows[0].calories);
+    			});
+    		});
         }
     });
 });
@@ -147,10 +152,11 @@ app.post('/getmonth', urlencodedParser, function(req, response) {
 });
 
 app.post('/lock', urlencodedParser, function(req, response) {
-	console.log(req.body);
+	console.log(req.body.content);
 	var date = new Date();
 	var today = date.getDate();
-	var name = req.body.content;
+    var name = req.body.content.split(", ")[0];
+    var project = req.body.content.split(", ")[1];
 	var str = "SELECT lastcheck FROM account WHERE username = '" + name + "';";
     dataControl(str).then(res => {
         console.log(res.rows);
@@ -159,22 +165,29 @@ app.post('/lock', urlencodedParser, function(req, response) {
         	dataControl(str);
         	var str = "UPDATE account SET checkcount = 1 WHERE username = '" + name + "';";
         	dataControl(str);
-        	var weekCount = date.getDay();
-        	response.send(weekCount.toString());
+        	getThreeInfo(response);
         } else {
         	if (res.rows[0].lastcheck == today) {
         		response.send('請隔日再行簽到。');
+        		getThreeInfo(response);
         	} else {
         		var str = "UPDATE account SET lastcheck='" + today + "' WHERE username = '" + name + "';";
         		dataControl(str);
         		var str = "UPDATE account SET checkcount = checkcount + 1 WHERE username = '" + name + "';";
         		dataControl(str);
-        		var weekCount = date.getDay();
-        		response.send(weekCount.toString());
+        		getThreeInfo(response);
         	}
         }
     });
 });
 
-
+function getThreeInfo(response) {
+    var str = "SELECT lastcheck, checkcount, lostcalories FROM account WHERE username = '" + name + "' LIMIT 1;";
+    dataControl(str).then(res => {
+        var str = "SELECT calories FROM projects WHERE name = '" + project + "' LIMIT 1;";
+    	dataControl(str).then(res2 => {
+        	response.send(res.rows[0].lastcheck + "," + res.rows[0].checkcount + "," + res2.rows[0].calories);
+    	});
+    });
+}
 
