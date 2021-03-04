@@ -127,7 +127,7 @@ app.post('/getlist', urlencodedParser, function(req, response) {
         if (typeof(res.rows[0]) == "undefined" || JSON.stringify(res.rows[0]).includes("null")) {
             response.send('無');
         } else {
-        	var projectName = "";
+        	var projectName = "無,";
         	for (var i = res.rows.length - 1; i >= 0; i--) {
         		if (i == 0) {
 					projectName += res.rows[i].name;
@@ -147,7 +147,7 @@ app.post('/getmonth', urlencodedParser, function(req, response) {
 });
 
 app.post('/lock', urlencodedParser, function(req, response) {
-	console.log(req.body.content);
+	console.log(req.body);
 	var date = new Date();
 	var today = date.getDate();
 	var name = req.body.content;
@@ -162,7 +162,7 @@ app.post('/lock', urlencodedParser, function(req, response) {
         	var weekCount = date.getDay();
         	response.send(weekCount.toString());
         } else {
-        	if (today != res.rows[0]) {
+        	if (res.rows[0].lastcheck == today) {
         		response.send('請隔日再行簽到。');
         	} else {
         		var str = "UPDATE account SET lastcheck='" + today + "' WHERE username = '" + name + "';";
