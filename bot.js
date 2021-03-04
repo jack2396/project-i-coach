@@ -157,7 +157,7 @@ app.post('/lock', urlencodedParser, function(req, response) {
         if (typeof(res.rows[0]) == "undefined" || JSON.stringify(res.rows[0]).includes("null")) {
         	var str = "UPDATE account SET lastcheck='" + today + "' WHERE username = '" + name + "';";
         	dataControl(str);
-        	var str = "UPDATE account SET checkcount +=" + 1 + "WHERE username = '" + name + "';";
+        	var str = "UPDATE account SET checkcount = checkcount + 1 WHERE username = '" + name + "';";
         	dataControl(str);
         	var weekCount = date.getDay();
         	response.send(weekCount.toString());
@@ -167,7 +167,7 @@ app.post('/lock', urlencodedParser, function(req, response) {
         	} else {
         		var str = "UPDATE account SET lastcheck='" + today + "' WHERE username = '" + name + "';";
         		dataControl(str);
-        		var str = "UPDATE account SET checkcount += 1 WHERE username = '" + name + "';";
+        		var str = "UPDATE account SET checkcount = checkcount + 1 WHERE username = '" + name + "';";
         		dataControl(str);
         		var weekCount = date.getDay();
         		response.send(weekCount.toString());
