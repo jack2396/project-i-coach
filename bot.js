@@ -1,4 +1,4 @@
-var express = require('express')
+var express = require('express');
 var app = express();
 const Pool = require('pg').Pool;
 const PG = require('pg').Client;
@@ -21,7 +21,7 @@ var urlencodedParser = bodyParser.urlencoded({
     extended: false
 })
 
-function DataFetch(Str) {
+function dataControl(Str) {
     return new Promise(function(resolve, reject) {
         pool.query(Str, (err, res) => {
             if (err) {
@@ -42,12 +42,12 @@ app.post('/login', urlencodedParser, function(req, response) {
     var pw = req.body.content.split(", ")[1];
 
     var str = "SELECT id FROM account WHERE EXISTS ( SELECT * FROM account WHERE username = '" + username + "' ) LIMIT 1;";
-    DataFetch(str).then(res => {
+    dataControl(str).then(res => {
         if (typeof(res.rows[0]) == "undefined" || JSON.stringify(res.rows[0]).includes("null")) {
             response.send('此帳號不存在。');
         } else {
             var str = "SELECT id FROM account WHERE EXISTS ( SELECT * FROM account WHERE username = '" + username + "' AND password = '" + pw + "' ) LIMIT 1;";
-            DataFetch(str).then(res => {
+            dataControl(str).then(res => {
                 if (typeof(res.rows[0]) == "undefined" || JSON.stringify(res.rows[0]).includes("null")) {
                     response.send('密碼錯誤，請重新輸入。');
                 } else {
@@ -63,7 +63,7 @@ app.post('/register', urlencodedParser, function(req, response) {
     var username = req.body.content.split(", ")[0];
     var pw = req.body.content.split(", ")[1];
     var str = "SELECT username FROM account WHERE EXISTS ( SELECT * FROM account WHERE username = '" + username + "' ) LIMIT 1;";
-    DataFetch(str).then(res => {
+    dataControl(str).then(res => {
         console.log(res.rows);
         if (typeof(res.rows[0]) == "undefined" || JSON.stringify(res.rows[0]).includes("null")) {
             var id = "";
@@ -99,7 +99,7 @@ app.post('/project', urlencodedParser, function(req, response) {
     var public = req.body.content.split(", ")[8];
     var author = req.body.content.split(", ")[9];
     var str = "SELECT name FROM projects WHERE EXISTS ( SELECT * FROM account WHERE name = '" + name + "' ) LIMIT 1;";
-    DataFetch(str).then(res => {
+    dataControl(str).then(res => {
         console.log(res.rows);
         if (typeof(res.rows[0]) == "undefined" || JSON.stringify(res.rows[0]).includes("null")) {
             var str = "INSERT INTO projects (name, type, height, weight, sex, age, bmi, calories, public, author) VALUES ('"+ name + "', '"+ type + "', '"+ height + "', '"+ weight + "', '" + sex + "', '" + age + "', '" + bmi + "', '" + calories + "', '" + public + "', '" + author + "' );";
@@ -122,7 +122,7 @@ app.post('/getlist', urlencodedParser, function(req, response) {
 	console.log(req.body.content);
     var name = req.body.content;
     var str = "SELECT name FROM projects WHERE author = '" + name + "'";
-    DataFetch(str).then(res => {
+    dataControl(str).then(res => {
         console.log(res.rows);
         if (typeof(res.rows[0]) == "undefined" || JSON.stringify(res.rows[0]).includes("null")) {
             response.send('無');
@@ -139,12 +139,41 @@ app.post('/getlist', urlencodedParser, function(req, response) {
             response.send(projectName);
         }
     });
-
-
 });
 
 app.post('/getmonth', urlencodedParser, function(req, response) {
 	var date = new Date();
     response.send((date.getMonth() + 1).toString());
+});
+
+app.post('/lock', urlencodedParser, function(req, response) {
+	console.log(req.body.content);
+	var date = new Date();
+	var time = Date.now();
+	var name = req.body.content;
+	var str = "SELECT lastcheck FROM account WHERE name = '" + name + "';";
+    dataControl(str).then(res => {
+        console.log(res.rows);
+        if (typeof(res.rows[0]) == "undefined" || JSON.stringify(res.rows[0]).includes("null")) {
+        	var str = "UPDATE account SET lastcheck='" + time + "' WHERE name = '" + name + "';";
+        	dataControl(str);
+        	var str = "UPDATE account SET checkcount += 1 WHERE name = '" + name + "';";
+        	dataControl(str);
+        	var weekCount = date.getDay();
+        	response.send(weekCount.toString());
+        } else {
+        	if (time - res.rows[0] <= 180000) {
+        		//24hrs = 86400000
+        		response.send('尚未經過24小時。');
+        	} else {
+        		var str = "UPDATE account SET lastcheck='" + time + "' WHERE name = '" + name + "';";
+        		dataControl(str);
+        		var str = "UPDATE account SET checkcount += 1 WHERE name = '" + name + "';";
+        		dataControl(str);
+        		var weekCount = date.getDay();
+        		response.send(weekCount.toString());
+        	}
+        }
+    });
 });
 
