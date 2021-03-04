@@ -19,7 +19,7 @@ app.listen(process.env.PORT || 5000);
 var bodyParser = require('body-parser');
 var urlencodedParser = bodyParser.urlencoded({
     extended: false
-})
+});
 
 function dataControl(Str) {
     return new Promise(function(resolve, reject) {
@@ -149,24 +149,23 @@ app.post('/getmonth', urlencodedParser, function(req, response) {
 app.post('/lock', urlencodedParser, function(req, response) {
 	console.log(req.body.content);
 	var date = new Date();
-	var time = Date.now();
+	var today = date.getDate();
 	var name = req.body.content;
 	var str = "SELECT lastcheck FROM account WHERE name = '" + name + "';";
     dataControl(str).then(res => {
         console.log(res.rows);
         if (typeof(res.rows[0]) == "undefined" || JSON.stringify(res.rows[0]).includes("null")) {
-        	var str = "UPDATE account SET lastcheck='" + time + "' WHERE name = '" + name + "';";
+        	var str = "UPDATE account SET lastcheck='" + today + "' WHERE name = '" + name + "';";
         	dataControl(str);
         	var str = "UPDATE account SET checkcount += 1 WHERE name = '" + name + "';";
         	dataControl(str);
         	var weekCount = date.getDay();
         	response.send(weekCount.toString());
         } else {
-        	if (time - res.rows[0] <= 180000) {
-        		//24hrs = 86400000
-        		response.send('尚未經過24小時。');
+        	if (today != res.rows[0]) {
+        		response.send('請隔日再行簽到。');
         	} else {
-        		var str = "UPDATE account SET lastcheck='" + time + "' WHERE name = '" + name + "';";
+        		var str = "UPDATE account SET lastcheck='" + today + "' WHERE name = '" + name + "';";
         		dataControl(str);
         		var str = "UPDATE account SET checkcount += 1 WHERE name = '" + name + "';";
         		dataControl(str);
@@ -176,4 +175,6 @@ app.post('/lock', urlencodedParser, function(req, response) {
         }
     });
 });
+
+
 
