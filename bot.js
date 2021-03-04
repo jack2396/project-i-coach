@@ -180,7 +180,7 @@ app.post('/lock', urlencodedParser, function(req, response) {
     });
 });
 
-function getThreeInfo(response) {
+function getThreeInfo(name, project, response) {
     var str = "SELECT lastcheck, checkcount, lostcalories FROM account WHERE username = '" + name + "' LIMIT 1;";
     dataControl(str).then(res => {
         var str = "SELECT calories FROM projects WHERE name = '" + project + "' LIMIT 1;";
