@@ -135,13 +135,7 @@ app.post('/getlist', urlencodedParser, function(req, response) {
         			projectName += res.rows[i].name + ",";
         		}
         	}
-    		var str = "SELECT lastcheck, checkcount, lostcalories FROM account WHERE username = '" + name + "' LIMIT 1;";
-    		dataControl(str).then(res => {
-        		var str = "SELECT calories FROM projects WHERE name = '" + project + "' LIMIT 1;";
-    			dataControl(str).then(res2 => {
-        			response.send(projectName + "," + res.rows[0].lastcheck + "," + res.rows[0].checkcount + "," + res2.rows[0].calories);
-    			});
-    		});
+        	response.send(projectName);
         }
     });
 });
@@ -165,17 +159,17 @@ app.post('/lock', urlencodedParser, function(req, response) {
         	dataControl(str);
         	var str = "UPDATE account SET checkcount = 1 WHERE username = '" + name + "';";
         	dataControl(str);
-        	getThreeInfo(response);
+        	getThreeInfo(name, project, response);
         } else {
         	if (res.rows[0].lastcheck == today) {
         		response.send('請隔日再行簽到。');
-        		getThreeInfo(response);
+        		getThreeInfo(name, project, response);
         	} else {
         		var str = "UPDATE account SET lastcheck='" + today + "' WHERE username = '" + name + "';";
         		dataControl(str);
         		var str = "UPDATE account SET checkcount = checkcount + 1 WHERE username = '" + name + "';";
         		dataControl(str);
-        		getThreeInfo(response);
+        		getThreeInfo(name, project, response);
         	}
         }
     });
