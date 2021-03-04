@@ -146,7 +146,7 @@ app.post('/getmonth', urlencodedParser, function(req, response) {
 });
 
 app.post('/delete', urlencodedParser, function(req, response) {
-	var name = req.body;
+	var name = req.body.content;
 	var str = "DELETE FROM project WHERE name = '" + name + "';";
     dataControl(str);
 });
@@ -165,6 +165,7 @@ app.post('/lock', urlencodedParser, function(req, response) {
         	dataControl(str);
         	var str = "UPDATE account SET checkcount = 1 WHERE username = '" + name + "';";
         	dataControl(str);
+        	response.send("請待隔日再行簽到。");
         	getThreeInfo(name, project, response);
         } else {
         	if (res.rows[0].lastcheck == today) {
