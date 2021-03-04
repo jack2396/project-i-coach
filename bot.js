@@ -145,6 +145,12 @@ app.post('/getmonth', urlencodedParser, function(req, response) {
     response.send((date.getMonth() + 1).toString());
 });
 
+app.post('/delete', urlencodedParser, function(req, response) {
+	var name = req.body;
+	var str = "DELETE FROM project WHERE name = '" + name + "';";
+    dataControl(str);
+});
+
 app.post('/lock', urlencodedParser, function(req, response) {
 	console.log(req.body.content);
 	var date = new Date();
@@ -162,7 +168,6 @@ app.post('/lock', urlencodedParser, function(req, response) {
         	getThreeInfo(name, project, response);
         } else {
         	if (res.rows[0].lastcheck == today) {
-        		response.send('請隔日再行簽到。');
         		getThreeInfo(name, project, response);
         	} else {
         		var str = "UPDATE account SET lastcheck='" + today + "' WHERE username = '" + name + "';";
